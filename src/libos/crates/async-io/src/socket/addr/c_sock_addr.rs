@@ -17,7 +17,7 @@ pub trait CSockAddr {
     /// Returns the address in `libc::sockaddr_storage` along with its length.
     fn to_c_storage(&self) -> (libc::sockaddr_storage, usize) {
         let mut c_storage =
-            unsafe { MaybeUninit::<libc::sockaddr_storage>::uninit().assume_init() };
+            unsafe { MaybeUninit::<libc::sockaddr_storage>::zeroed().assume_init() };
 
         c_storage.ss_family = self.c_family();
         let offset = size_of_val(&c_storage.ss_family);

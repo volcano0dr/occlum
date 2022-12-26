@@ -13,8 +13,6 @@
 //! reach timeout.
 #![cfg_attr(feature = "sgx", no_std)]
 #![feature(thread_local)]
-#![feature(const_fn_fn_ptr_basics)]
-#![feature(const_fn_trait_bound)]
 #![feature(duration_constants)]
 #![feature(get_mut_unchecked)]
 #![feature(negative_impls)]

@@ -347,16 +347,17 @@ impl Inner {
 
     fn gen_iovecs_from_recv_buf(&mut self) -> ([libc::iovec; 2], usize) {
         let mut iovecs_len = 0;
-        let mut iovecs = unsafe { MaybeUninit::<[libc::iovec; 2]>::uninit().assume_init() };
+        let mut iovecs = MaybeUninit::<[libc::iovec; 2]>::uninit();
         self.recv_buf.with_producer_view(|part0, part1| {
             debug_assert!(part0.len() > 0);
+            let io_vecs = unsafe { &mut *iovecs.as_mut_ptr() };
 
-            iovecs[0] = libc::iovec {
+            io_vecs[0] = libc::iovec {
                 iov_base: part0.as_ptr() as _,
                 iov_len: part0.len() as _,
             };
 
-            iovecs[1] = if part1.len() > 0 {
+            io_vecs[1] = if part1.len() > 0 {
                 iovecs_len = 2;
                 libc::iovec {
                     iov_base: part1.as_ptr() as _,
@@ -374,7 +375,7 @@ impl Inner {
             0
         });
         debug_assert!(iovecs_len > 0);
-        (iovecs, iovecs_len)
+        (unsafe { iovecs.assume_init() }, iovecs_len)
     }
 }
 

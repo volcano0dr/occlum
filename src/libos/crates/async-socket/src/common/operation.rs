@@ -41,7 +41,7 @@ pub fn do_connect<A: Addr>(host_fd: HostFd, addr: Option<&A>) -> Result<()> {
         Some(addr_inner) => addr_inner.to_c_storage(),
         None => {
             let mut sockaddr_storage =
-                unsafe { MaybeUninit::<libc::sockaddr_storage>::uninit().assume_init() };
+                unsafe { MaybeUninit::<libc::sockaddr_storage>::zeroed().assume_init() };
             sockaddr_storage.ss_family = libc::AF_UNSPEC as _;
             (sockaddr_storage, mem::size_of::<libc::sa_family_t>())
         }

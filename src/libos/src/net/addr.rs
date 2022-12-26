@@ -57,7 +57,7 @@ impl AnyAddr {
             Self::Netlink(netlink_addr) => netlink_addr.to_c_storage(),
             Self::Unspec => {
                 let mut sockaddr_storage =
-                    unsafe { MaybeUninit::<libc::sockaddr_storage>::uninit().assume_init() };
+                    unsafe { MaybeUninit::<libc::sockaddr_storage>::zeroed().assume_init() };
                 sockaddr_storage.ss_family = libc::AF_UNSPEC as _;
                 (sockaddr_storage, mem::size_of::<libc::sa_family_t>())
             }

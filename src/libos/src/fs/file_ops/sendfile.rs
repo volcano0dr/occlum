@@ -24,7 +24,9 @@ pub async fn do_sendfile(
     if !out_file.access_mode().writable() {
         return_errno!(EBADF, "out_file is not writable");
     }
-    let mut buffer: [u8; 1024 * 11] = unsafe { MaybeUninit::uninit().assume_init() };
+
+    let mut buffer = MaybeUninit::<[u8; 1024 * 11]>::uninit();
+    let buffer = unsafe { &mut *buffer.as_mut_ptr() };
 
     let mut read_offset = match offset {
         Some(offset) => offset as usize,

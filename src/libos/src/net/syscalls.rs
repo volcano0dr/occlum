@@ -500,8 +500,7 @@ fn copy_sock_addr_from_user(
 
     let sockaddr_storage = {
         // Safety. The content will be initialized before function returns.
-        let mut sockaddr_storage =
-            unsafe { MaybeUninit::<libc::sockaddr_storage>::uninit().assume_init() };
+        let mut sockaddr_storage = MaybeUninit::<libc::sockaddr_storage>::uninit();
         // Safety. The dst slice is the only mutable reference to the sockaddr_storge
         let sockaddr_dst_buf = unsafe {
             let ptr = &mut sockaddr_storage as *mut _ as *mut u8;
@@ -509,7 +508,7 @@ fn copy_sock_addr_from_user(
             std::slice::from_raw_parts_mut(ptr, len)
         };
         sockaddr_dst_buf.copy_from_slice(sockaddr_src_buf);
-        sockaddr_storage
+        unsafe { sockaddr_storage.assume_init() }
     };
     Ok(sockaddr_storage)
 }
