@@ -1,5 +1,5 @@
 use crate::signal::constants::*;
-use std::intrinsics::atomic_store;
+use std::intrinsics::atomic_store_seqcst;
 
 use super::do_futex::futex_wake;
 use super::do_vfork::{is_vforked_child_process, vfork_return_to_parent};
@@ -59,7 +59,7 @@ fn exit_thread(term_status: TermStatus) {
     // Notify a thread, if any, that waits on ctid. See set_tid_address(2) for more info.
     if let Some(ctid_ptr) = thread.clear_ctid() {
         unsafe {
-            atomic_store(ctid_ptr.as_ptr(), 0);
+            atomic_store_seqcst(ctid_ptr.as_ptr(), 0);
         }
         futex_wake(ctid_ptr.as_ptr() as *const i32, 1);
     }
